@@ -1,115 +1,146 @@
-import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { BiLogoGmail } from 'react-icons/bi';
-import { BsGithub } from 'react-icons/bs';
-import { IoLogoLinkedin, IoLogoTwitter } from 'react-icons/io5';
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { IoMdMail } from "react-icons/io";
 import { FaPhone } from "react-icons/fa6";
 
+const emailEndpoint = "https://formsubmit.co/ajax/pratikspatil009@gmail.com";
+
 export default function Contact() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const [isSending, setIsSending] = useState(false);
+  const [status, setStatus] = useState({ type: "idle", message: "" });
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const payload = Object.fromEntries(formData.entries());
+
+    if (payload._honey) return;
+
+    setIsSending(true);
+    setStatus({ type: "idle", message: "" });
+
+    try {
+      const response = await fetch(emailEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+
+      if (!response.ok || result.success === false || result.success === "false") {
+        throw new Error("The message could not be sent.");
+      }
+
+      form.reset();
+      setStatus({
+        type: "success",
+        message: "Message sent. Thanks for reaching out!",
+      });
+    } catch {
+      setStatus({
+        type: "error",
+        message: "Message not sent. Please email pratikspatil009@gmail.com directly.",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  }
+
+  const fieldClass = "w-full rounded border border-black/20 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-[#71717A] focus:border-black focus:ring-2 focus:ring-black/10";
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0 }}
-      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-      transition={{ duration: 0.8 }}
-      className='lg:my-16 lg:px-28 my-8 px-5'
-      id='contact'
+    <motion.section
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      viewport={{ once: true, amount: 0.15 }}
+      className="my-12 px-5 lg:my-20 lg:px-28"
+      id="contact"
     >
-      <motion.h2
-        initial={{ y: -50, opacity: 0 }}
-        animate={isInView ? { y: 0, opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.8 }}
-        className='text-2xl lg:text-4xl text-center'
-      >
-        Contact <span className='font-extrabold'>Me</span>
-      </motion.h2>
+      <div className="mx-auto max-w-7xl">
+        <h2 className="text-center text-2xl lg:text-4xl">
+          Contact <span className="font-extrabold">Me</span>
+        </h2>
 
-      <div className='flex justify-between items-center mt-8 lg:mt-16 flex-col lg:flex-row'>
-        <motion.div
-          initial={{ x: -50, opacity: 0 }}
-          animate={isInView ? { x: 0, opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.8 }}
-          className='lg:w-[40%]'
-        >
-          <form className='w-full space-y-3 lg:space-y-5'>
-            <input className='border-2 px-5 py-3 border-black rounded placeholder:text-[#71717A] text-sm w-full' type="text" placeholder='Your name' required />
-            <input className='border-2 px-5 py-3 border-black rounded placeholder:text-[#71717A] text-sm w-full' type="email" placeholder='Email' required />
-            <input className='border-2 px-5 py-3 border-black rounded placeholder:text-[#71717A] text-sm w-full' type="text" placeholder='Your website (If exists)' />
-            <textarea className='resize-none border-2 px-5 py-3 h-32 border-black placeholder:text-[#71717A]  rounded text-sm w-full' placeholder='How can I help?*'></textarea>
+        <div className="mt-8 grid gap-10 lg:mt-14 lg:grid-cols-[1.2fr_0.8fr] lg:gap-20">
+          <form onSubmit={handleSubmit} className="space-y-5" aria-label="Send Pratik a message">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <label className="block text-sm font-semibold">
+                Your name
+                <input className={`${fieldClass} mt-2 font-normal`} name="name" type="text" autoComplete="name" maxLength="100" placeholder="Name" required />
+              </label>
+              <label className="block text-sm font-semibold">
+                Email address
+                <input className={`${fieldClass} mt-2 font-normal`} name="email" type="email" autoComplete="email" maxLength="254" placeholder="you@example.com" required />
+              </label>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0 }}
-              transition={{ duration: 0.8 }}
-              className='flex justify-between gap-3 lg:gap-5 flex-col lg:flex-row'
-            >
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                type='submit'
-                className='bg-black justify-center w-fit lg:w-auto lg:flex-1 hover:shadow-lg text-white px-3 py-2 rounded flex items-center gap-x-3 font-medium'
+            <label className="block text-sm font-semibold">
+              Project or opportunity
+              <input className={`${fieldClass} mt-2 font-normal`} name="subject" type="text" maxLength="120" placeholder="What would you like to discuss?" required />
+            </label>
+
+            <label className="block text-sm font-semibold">
+              Website or profile <span className="font-normal text-[#71717A]">(optional)</span>
+              <input className={`${fieldClass} mt-2 font-normal`} name="website" type="url" maxLength="300" placeholder="https://" />
+            </label>
+
+            <label className="block text-sm font-semibold">
+              Message
+              <textarea className={`${fieldClass} mt-2 min-h-36 resize-y font-normal`} name="message" maxLength="5000" placeholder="A few details about what you have in mind..." required />
+            </label>
+
+            <input className="hidden" name="_honey" type="text" tabIndex="-1" autoComplete="off" aria-hidden="true" />
+            <input name="_subject" type="hidden" value="New portfolio contact" />
+            <input name="_template" type="hidden" value="table" />
+
+            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+              <button
+                className="flex items-center gap-2 rounded bg-black px-5 py-3 font-medium text-white transition hover:bg-black/80 disabled:cursor-not-allowed disabled:opacity-60"
+                type="submit"
+                disabled={isSending}
               >
-                Get In Touch
-              </motion.button>
+                {isSending ? "Sending..." : "Send message"}
+                {!isSending && <IoMdMail aria-hidden="true" />}
+              </button>
+              <p className="text-xs text-[#71717A]">First-time delivery requires confirming your email from FormSubmit.</p>
+            </div>
 
-              <div className='flex items-center gap-x-2 lg:gap-x-5'>
-                {[BiLogoGmail, IoLogoLinkedin, IoLogoTwitter, BsGithub].map((Icon, index) => (
-                  <motion.a
-                    key={index}
-                    href="#"
-                    className="bg-white p-2 lg:p-3 rounded border-2 border-black"
-                    whileHover={{ scale: 1.1, backgroundColor: "#000", color: "#fff" }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Icon className="w-4 h-4 lg:w-5 lg:h-5" />
-                  </motion.a>
-                ))}
-              </div>
-            </motion.div>
+            <p
+              className={`min-h-5 text-sm ${status.type === "error" ? "text-red-700" : "text-green-800"}`}
+              role="status"
+              aria-live="polite"
+            >
+              {status.message}
+            </p>
           </form>
-        </motion.div>
 
-        <motion.div
-          initial={{ x: 50, opacity: 0 }}
-          animate={isInView ? { x: 0, opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.8 }}
-          className='lg:w-1/2'
-        >
-          <div className='font-extrabold text-2xl lg:text-5xl mt-5 lg:mt-0 space-y-1 lg:space-y-3'>
-            <h2>Let's <span className='text-white' style={{ WebkitTextStroke: '1px black' }}>talk</span> for</h2>
-            <h2>Something special</h2>
+          <div className="lg:pt-2">
+            <div className="space-y-1 text-2xl font-extrabold lg:text-5xl">
+              <h3>Let&apos;s <span className="text-white" style={{ WebkitTextStroke: "1px black" }}>talk</span> for</h3>
+              <h3>Something special</h3>
+            </div>
+            <p className="mt-4 text-sm/6 text-[#71717A] lg:mt-6 lg:text-base">
+              Share a little about your project or opportunity. I&apos;ll get back to you by email.
+            </p>
+
+            <div className="mt-6 flex flex-col gap-3 text-sm font-semibold lg:text-base">
+              <a className="flex items-center gap-2 hover:underline" href="mailto:pratikspatil009@gmail.com">
+                <IoMdMail aria-hidden="true" />
+                <span>pratikspatil009@gmail.com</span>
+              </a>
+              <a className="flex items-center gap-2 hover:underline" href="tel:+919579991561">
+                <FaPhone aria-hidden="true" />
+                <span>+91 95799 91561</span>
+              </a>
+            </div>
           </div>
-
-          <p className='text-[#71717A] text-sm/6 lg:text-base mt-3 lg:mt-6'>I seek to push the limits of creativity to create high-engaging, user-friendly, and memorable interactive experiences.</p>
-
-          <div className='font-semibold text-sm lg:text-xl flex flex-col mt-6 gap-2 lg:gap-4'>
-            <motion.a
-              whileHover={{ x: 5 }}
-              className='flex items-center gap-2 group'
-              href="mailto:Youremail@gmail.com"
-            >
-              <span className='border-2 transition-all border-transparent group-hover:border-black rounded-full p-1'>
-                <IoMdMail className="w-4 h-4 lg:w-5 lg:h-5" />
-              </span>
-              Youremail@gmail.com
-            </motion.a>
-
-            <motion.a
-              whileHover={{ x: 5 }}
-              className='flex items-center gap-2 group'
-              href="tele:1234567890"
-            >
-              <span className='border-2 transition-all border-transparent group-hover:border-black rounded-full p-[5px]'>
-                <FaPhone className="w-3 h-3 lg:w-4 lg:h-4" />
-              </span>
-              1234567890
-            </motion.a>
-          </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </motion.section>
   );
 }

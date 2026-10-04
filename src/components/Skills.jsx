@@ -1,44 +1,38 @@
-import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FaJs, FaReact, FaNodeJs, FaPython, FaDatabase,FaJava } from "react-icons/fa";
-import { BiLogoPostgresql } from "react-icons/bi";
-import { RiNextjsFill,RiTailwindCssFill } from "react-icons/ri";
-import { CgFigma } from "react-icons/cg";
+import { FaJs, FaReact, FaNodeJs, FaPython, FaDatabase, FaJava, FaAws, FaDocker } from "react-icons/fa";
 
 export default function Skills() {
-  const [skills] = useState([
+  const skills = [
     { id: 1, name: "JavaScript", icon: <FaJs size={50} /> },
-    { id: 2, name: "React", icon: <FaReact size={50} /> },
-    { id: 3, name: "Node.js", icon: <FaNodeJs size={50} /> },
-    { id: 4, name: "Python", icon: <FaPython size={50} /> },
-    { id: 5, name: "MongoDB", icon: <FaDatabase size={50} /> },
-    { id: 6, name: "Java", icon: <FaJava size={50} /> },
-    { id: 7, name: "Postgresql", icon: <BiLogoPostgresql size={50} /> },
-    { id: 8, name: "Next.js", icon: <RiNextjsFill size={50} /> },
-    { id: 9, name: "Tailwind", icon: <RiTailwindCssFill size={50} /> },
-    { id: 10, name: "Figma", icon: <CgFigma size={50} /> },
-  ]);
+    { id: 2, name: "TypeScript", icon: <FaJs size={50} /> },
+    { id: 3, name: "React", icon: <FaReact size={50} /> },
+    { id: 4, name: "Node.js", icon: <FaNodeJs size={50} /> },
+    { id: 5, name: "Java", icon: <FaJava size={50} /> },
+    { id: 6, name: "Spring Boot", icon: <FaJava size={50} /> },
+    { id: 7, name: "Python", icon: <FaPython size={50} /> },
+    { id: 8, name: "FastAPI", icon: <FaPython size={50} /> },
+    { id: 9, name: "MySQL", icon: <FaDatabase size={50} /> },
+    { id: 10, name: "MongoDB", icon: <FaDatabase size={50} /> },
+    { id: 11, name: "AWS", icon: <FaAws size={50} /> },
+    { id: 12, name: "Docker", icon: <FaDocker size={50} /> },
+    
 
-  const [experiences] = useState([
+  ];
+
+  const experiences = [
     {
       id: 1,
-      company: "Google",
-      role: "Lead Software Engineer",
-      period: "Nov 2019 - Present",
-      description:
-        "Developed innovative solutions for Google's core search algorithms, optimizing search accuracy and user experience. Developed innovative solutions for Google's core search algorithms, optimizing search accuracy and user experience. Developed innovative solutions for Google's core search algorithms, optimizing search accuracy and user experience. Developed innovative solutions for Google's core search algorithms, optimizing search accuracy and user experience.",
-      logo: "/assets/google.svg",
+      company: "Campus Credentials",
+      role: "Full Stack Development Intern",
+      period: "Jun 2025 - Aug 2025",
+      bulletPoints: [
+        "Developed Exam-Wizards, a smart online assessment platform using React.js, Spring Boot, MySQL, and REST APIs.",
+        "Designed responsive user interfaces and implemented RESTful APIs for seamless frontend-backend integration.",
+        "Built core features including user authentication, exam management, question handling, and result processing.",
+        "Gained hands-on experience in full-stack development, database management, Git version control, and application deployment.",
+      ],
     },
-    {
-      id: 2,
-      company: "Youtube",
-      role: "Software Engineer",
-      period: "Jan 2017 - Oct 2019",
-      description:
-        "At Youtube, I served as a  Software Engineer, focusing on the design and implementation of backend systems for the social media giant's dynamic platform. Working on projects that involved large-scale data processing and user engagement features, I leveraged my expertise to ensure seamless functionality and scalability.",
-      logo: "/assets/youtube.svg",
-    },
-  ]);
+  ];
 
   return (
     <div className="mt-3 lg:mt-16" id="skills">
@@ -103,7 +97,6 @@ export default function Skills() {
             >
               <div className="flex justify-between flex-col items-start lg:flex-row lg:items-center">
                 <div className="flex items-center gap-5">
-                  <img className="w-7" src={exp.logo} alt="" />
                   <h2 className="font-semibold text-white text-lg lg:text-xl">
                     {exp.role} at {exp.company}
                   </h2>
@@ -112,9 +105,11 @@ export default function Skills() {
                   {exp.period}
                 </span>
               </div>
-              <p className="text-[#D4D4D8] mt-6 text-sm/6 lg:text-base font-light">
-                {exp.description}
-              </p>
+              <ul className="mt-6 list-disc space-y-2 pl-5 text-sm/6 font-light text-[#D4D4D8] marker:text-[#9fe3c1] lg:text-base">
+                {exp.bulletPoints.map((bulletPoint) => (
+                  <li key={bulletPoint}>{bulletPoint}</li>
+                ))}
+              </ul>
             </motion.div>
           ))}
         </div>
